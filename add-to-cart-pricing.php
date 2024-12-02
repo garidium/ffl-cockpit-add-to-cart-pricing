@@ -39,6 +39,15 @@ function custom_map_price_check($price, $product) {
 
     // Check if the display price is below the MAP price
     if ($map_price && $display_price < floatval($map_price)) {
+        // Check if we're in a dynamic search result or AJAX request
+        if (
+            (function_exists('is_ajax') && is_ajax()) || // Standard AJAX check
+            (isset($_REQUEST['wc-ajax']) && $_REQUEST['wc-ajax'] === 'product_search') || // WooCommerce AJAX search
+            (isset($_REQUEST['action']) && $_REQUEST['action'] === 'ajax_search') // Custom AJAX search
+        ) {
+            return '$'.number_format($map_price, 2). ' <span class="cockpit-map-message-inner">(View Product to See Lower Price)</span>'; 
+        }
+
         // Add unique identifiers for each product
         $unique_id = 'product-' . $product_id;
 
